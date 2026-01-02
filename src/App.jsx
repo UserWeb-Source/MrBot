@@ -1,18 +1,56 @@
 import './App.css';
-import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Navbar from "./Components/Navbar.jsx";
+import React from "react";
+import Home from "./Components/Home.jsx";
+import Features from "./Components/Feature.jsx";
 
 function App() {
 
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navbar />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  )
+    return (
+        <>
+            <BrowserRouter>
+                <div className="grain-texture">
+                    {/* Cyan Glow */}
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: "15%",
+                            right: "10%",
+                            width: "500px",
+                            height: "500px",
+                            background: "radial-gradient(circle, rgba(255, 145, 145,0.2) 0%, transparent 70%)",
+                            borderRadius: "50%",
+                            filter: "blur(80px)",
+                            pointerEvents: "none",
+                            zIndex: 0,
+                        }}
+                    />
+
+                    {/* Purple Glow */}
+                    <div
+                        style={{
+                            position: "fixed",
+                            bottom: "20%",
+                            left: "15%",
+                            width: "600px",
+                            height: "600px",
+                            background: "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)",
+                            borderRadius: "50%",
+                            filter: "blur(100px)",
+                            pointerEvents: "none",
+                            zIndex: 0,
+                        }}
+                    />
+                    <Navbar/>
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/features" element={<Features/>}/>
+                    </Routes>
+                </div>
+            </BrowserRouter>
+        </>
+    )
 }
 
 export default App

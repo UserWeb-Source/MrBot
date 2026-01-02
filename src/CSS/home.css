@@ -1,0 +1,184 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at top, #0f1a3a, #050814);
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* =========================
+   GLASSMORPHISM
+========================= */
+.glass-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.glass-strong {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(18px);
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+.fade-in-up {
+    animation: fadeUp 1s ease forwards;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.float-animate {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-18px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   ORB FLOATING
+========================= */
+.orb-floating {
+    animation: orbFloat 10s ease-in-out infinite;
+}
+
+@keyframes orbFloat {
+    0% {
+        transform: translateY(0) translateX(0);
+    }
+    50% {
+        transform: translateY(-30px) translateX(20px);
+    }
+    100% {
+        transform: translateY(0) translateX(0);
+    }
+}
+
+/* =========================
+   SVG RINGS
+========================= */
+.rotate-ring {
+    animation: spin 40s linear infinite;
+}
+
+.rotate-ring-reverse {
+    animation: spinReverse 30s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinReverse {
+    from {
+        transform: rotate(360deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* =========================
+   GLOW EFFECTS
+========================= */
+.pulse-glow {
+    animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+
+/* =========================
+   BUTTON HOVER (PURE CSS)
+========================= */
+button {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-3px);
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+@media (max-width: 1200px) {
+    section > div > div {
+        grid-template-columns: 1fr !important;
+        gap: 60px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 48px !important;
+    }
+
+    section {
+        padding: 80px 6% !important;
+    }
+
+    .stats {
+        flex-wrap: wrap;
+        gap: 30px !important;
+    }
+
+    svg {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 38px !important;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .glass-card {
+        padding: 24px !important;
+    }
+}

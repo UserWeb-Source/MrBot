@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot Glassmorphism</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-25px); }
+        }
+
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotate-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                opacity: 0.6;
+                filter: drop-shadow(0 0 20px currentColor);
+            }
+            50% {
+                opacity: 1;
+                filter: drop-shadow(0 0 40px currentColor);
+            }
+        }
+
+        @keyframes fade-slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes orb-float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                transform: translate(20px, -30px) scale(1.1);
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .float-animate {
+            animation: float-gentle 8s ease-in-out infinite;
+        }
+
+        .rotate-ring {
+            animation: rotate-slow 20s linear infinite;
+        }
+
+        .rotate-ring-reverse {
+            animation: rotate-reverse 25s linear infinite;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        .fade-in-up {
+            animation: fade-slide-up 1s ease-out forwards;
+        }
+
+        .orb-floating {
+            animation: orb-float 6s ease-in-out infinite;
+        }
+
+        .grain-texture {
+            background-image:
+                    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+
+        .page {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+            animation: fade-slide-up 0.6s ease-out forwards;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 2px;
+        }
+    </style>
+    <style>@view-transition { navigation: auto; }</style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+</head>
+<body class="h-full">
+<div id="app" class="w-full h-full overflow-auto"></div>
+<script>
+    const defaultConfig = {
+        bg_deep_blue: "#0a0f1e",
+        bg_mid_blue: "#141b2d",
+        bg_purple: "#1a1535",
+        glass_border: "#ffffff",
+        accent_cyan: "#00e5ff",
+        accent_purple: "#a855f7",
+        text_white: "#ffffff",
+        font_family: "Plus Jakarta Sans",
+        font_size: 16,
+        brand_name: "NeuralAI",
+        nav_item_1: "Home",
+        nav_item_2: "Features",
+        nav_item_3: "Platform",
+        nav_item_4: "Pricing",
+        nav_cta: "Start Free",
+        hero_title: "Intelligent Conversations",
+        hero_subtitle: "Next-Generation AI Chatbot",
+        hero_description: "Experience the future of customer engagement with our advanced AI-powered chatbot platform. Seamless, intelligent, and always learning.",
+        primary_button: "Get Started Free",
+        secondary_button: "View Demo",
+        feature_1_title: "Neural Processing",
+        feature_2_title: "Adaptive Learning",
+        feature_3_title: "Real-Time Insights",
+        footer_text: "Transforming conversations with AI intelligence"
+    };
+
+    let config = {};
+    let currentPage = 'home';
+
+    async function onConfigChange(newConfig) {
+        config = newConfig;
+        render();
+    }
+
+    function navigateToPage(pageName) {
+        currentPage = pageName;
+
+        // Update nav link active state
+        const allLinks = document.querySelectorAll('.nav-link');
+        allLinks.forEach(link => link.classList.remove('active'));
+
+        const activeLink = document.querySelector(`[data-page="${pageName}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+
+        // Update page visibility
+        const allPages = document.querySelectorAll('.page');
+        allPages.forEach(page => {
+            page.classList.remove('active');
+        });
+
+        const activePage = document.getElementById(`${pageName}-page`);
+        if (activePage) {
+            activePage.classList.add('active');
+        }
+
+        // Scroll to top smoothly
+        const appContainer = document.getElementById('app');
+        if (appContainer) {
+            appContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function render() {
+        const app = document.getElementById('app');
+
+        const fontFamily = config.font_family || defaultConfig.font_family;
+        const baseSize = config.font_size || defaultConfig.font_size;
+        const bgDeep = config.bg_deep_blue || defaultConfig.bg_deep_blue;
+        const bgMid = config.bg_mid_blue || defaultConfig.bg_mid_blue;
+        const bgPurple = config.bg_purple || defaultConfig.bg_purple;
+        const glassBorder = config.glass_border || defaultConfig.glass_border;
+        const accentCyan = config.accent_cyan || defaultConfig.accent_cyan;
+        const accentPurple = config.accent_purple || defaultConfig.accent_purple;
+        const textWhite = config.text_white || defaultConfig.text_white;
+
+        app.innerHTML = `
+        <style>
+          :root {
+            --accent-cyan: ${accentCyan};
+            --accent-purple: ${accentPurple};
+          }
+        </style>
+
+        <div class="grain-texture" style="font-family: ${fontFamily}, system-ui, -apple-system, sans-serif; background: linear-gradient(180deg, ${bgDeep} 0%, ${bgMid} 50%, ${bgPurple} 100%); min-height: 100%; position: relative;">
+
+          <!-- Ambient Light Orbs -->
+        <div style="position: fixed; top: 15%; right: 10%; width: 500px; height: 500px; background: radial-gradient(circle, ${accentCyan}15 0%, transparent 70%); border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;"></div>
+        <div style="position: fixed; bottom: 20%; left: 15%; width: 600px; height: 600px; background: radial-gradient(circle, ${accentPurple}12 0%, transparent 70%); border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0;"></div>
+
+            <!-- Navigation -->
+        <nav class="glass-card" style="position: sticky; top: 0; z-index: 1000; padding: 18px 5%; border-bottom: 1px solid ${glassBorder}18;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+
+            <!-- Logo -->
+        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="navigateToPage('home')">
+        <div class="glass-strong" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px ${accentCyan}40;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logoGrad1)"/>
+        <path d="M2 17L12 22L22 17" stroke="url(#logoGrad2)" stroke-width="2"/>
+        <defs>
+        <linearGradient id="logoGrad1" x1="2" y1="2" x2="22" y2="12">
+        <stop offset="0%" stop-color="${accentCyan}"/>
+        <stop offset="100%" stop-color="${accentPurple}"/>
+        </linearGradient>
+        <linearGradient id="logoGrad2" x1="2" y1="17" x2="22" y2="22">
+        <stop offset="0%" stop-color="${accentCyan}"/>
+        <stop offset="100%" stop-color="${accentPurple}"/>
+        </linearGradient>
+        </defs>
+        </svg>
+        </div>
+        <span style="font-size: ${baseSize * 1.375}px; font-weight: 800; color: ${textWhite}; letter-spacing: -0.02em;">
+        ${config.brand_name || defaultConfig.brand_name}
+        </span>
+        </div>
+
+            <!-- Nav Links -->
+        <div style="display: flex; align-items: center; gap: 40px;">
+        <a class="nav-link active" data-page="home" style="color: ${textWhite}; opacity: 0.8; font-size: ${baseSize}px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer;"
+        onclick="navigateToPage('home')"
+        onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'"
+        onmouseout="if(!this.classList.contains('active')) { this.style.opacity='0.8'; this.style.color='${textWhite}' }">
+        ${config.nav_item_1 || defaultConfig.nav_item_1}
+        </a>
+        <a class="nav-link" data-page="features" style="color: ${textWhite}; opacity: 0.8; font-size: ${baseSize}px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer;"
+        onclick="navigateToPage('features')"
+        onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'"
+        onmouseout="if(!this.classList.contains('active')) { this.style.opacity='0.8'; this.style.color='${textWhite}' }">
+        ${config.nav_item_2 || defaultConfig.nav_item_2}
+        </a>
+        <a class="nav-link" data-page="platform" style="color: ${textWhite}; opacity: 0.8; font-size: ${baseSize}px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer;"
+        onclick="navigateToPage('platform')"
+        onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'"
+        onmouseout="if(!this.classList.contains('active')) { this.style.opacity='0.8'; this.style.color='${textWhite}' }">
+        ${config.nav_item_3 || defaultConfig.nav_item_3}
+        </a>
+        <a class="nav-link" data-page="pricing" style="color: ${textWhite}; opacity: 0.8; font-size: ${baseSize}px; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer;"
+        onclick="navigateToPage('pricing')"
+        onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'"
+        onmouseout="if(!this.classList.contains('active')) { this.style.opacity='0.8'; this.style.color='${textWhite}' }">
+        ${config.nav_item_4 || defaultConfig.nav_item_4}
+        </a>
+        <button class="glass-strong" style="background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); color: ${textWhite}; padding: 11px 28px; border-radius: 12px; font-size: ${baseSize}px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 20px ${accentCyan}30; transition: all 0.3s;"
+        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 30px ${accentCyan}50'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px ${accentCyan}30'">
+        ${config.nav_cta || defaultConfig.nav_cta}
+        </button>
+        </div>
+        </div>
+        </nav>
+
+            <!-- HOME PAGE -->
+        <div id="home-page" class="page active">
+            <!-- Hero Section -->
+        <section style="padding: 8% 5%; position: relative; z-index: 1;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;">
+
+            <!-- Left Content -->
+        <div class="fade-in-up">
+            <!-- Badge -->
+        <div class="glass-card" style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; border-radius: 50px; margin-bottom: 28px;">
+        <div style="width: 8px; height: 8px; background: ${accentCyan}; border-radius: 50%; box-shadow: 0 0 12px ${accentCyan};"></div>
+        <span style="font-size: ${baseSize * 0.875}px; color: ${accentCyan}; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">
+        ${config.hero_subtitle || defaultConfig.hero_subtitle}
+        </span>
+        </div>
+
+            <!-- Title -->
+        <h1 style="font-size: ${baseSize * 4.5}px; font-weight: 900; color: ${textWhite}; line-height: 1.05; margin-bottom: 24px; letter-spacing: -0.03em;">
+        ${config.hero_title || defaultConfig.hero_title}
+        </h1>
+
+            <!-- Description -->
+        <p style="font-size: ${baseSize * 1.25}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7; margin-bottom: 44px; max-width: 95%;">
+        ${config.hero_description || defaultConfig.hero_description}
+        </p>
+
+            <!-- CTA Buttons -->
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 60px;">
+        <button style="background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); color: ${textWhite}; padding: 18px 40px; border-radius: 14px; font-size: ${baseSize * 1.125}px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 8px 30px ${accentCyan}35; transition: all 0.3s;"
+        onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 40px ${accentCyan}50'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 30px ${accentCyan}35'">
+        ${config.primary_button || defaultConfig.primary_button}
+        </button>
+
+        <button class="glass-card" style="color: ${textWhite}; padding: 18px 40px; border-radius: 14px; font-size: ${baseSize * 1.125}px; font-weight: 600; border: 1px solid ${glassBorder}20; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentCyan}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+        ${config.secondary_button || defaultConfig.secondary_button}
+        </button>
+        </div>
+
+            <!-- Trust Stats -->
+        <div style="display: flex; gap: 50px;">
+        <div>
+        <div style="font-size: ${baseSize * 2.75}px; font-weight: 900; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">100K+</div>
+        <div style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6; margin-top: 6px; font-weight: 500;">Active Users</div>
+        </div>
+        <div>
+        <div style="font-size: ${baseSize * 2.75}px; font-weight: 900; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">10M+</div>
+        <div style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6; margin-top: 6px; font-weight: 500;">Conversations</div>
+        </div>
+        <div>
+        <div style="font-size: ${baseSize * 2.75}px; font-weight: 900; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">99.9%</div>
+        <div style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6; margin-top: 6px; font-weight: 500;">Uptime</div>
+        </div>
+        </div>
+        </div>
+
+            <!-- Right - AI Chip Illustration -->
+        <div style="position: relative; height: 700px; display: flex; align-items: center; justify-content: center;">
+
+            <!-- Floating Glass Orbs -->
+        <div class="glass-card orb-floating" style="position: absolute; width: 100px; height: 100px; border-radius: 50%; top: 10%; right: 15%; animation-delay: 0s;"></div>
+        <div class="glass-card orb-floating" style="position: absolute; width: 70px; height: 70px; border-radius: 50%; bottom: 20%; left: 10%; animation-delay: 2s;"></div>
+        <div class="glass-card orb-floating" style="position: absolute; width: 50px; height: 50px; border-radius: 50%; top: 30%; left: 5%; animation-delay: 4s;"></div>
+
+            <!-- Main Illustration Container -->
+        <div class="float-animate" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+
+        <svg viewBox="0 0 600 600" style="width: 90%; height: auto; position: relative; z-index: 2;">
+        <defs>
+        <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:${accentCyan}"/>
+        <stop offset="100%" style="stop-color:${accentPurple}"/>
+        </linearGradient>
+
+        <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:${accentCyan};stop-opacity:0.3"/>
+        <stop offset="100%" style="stop-color:${accentPurple};stop-opacity:0.3"/>
+        </linearGradient>
+
+        <filter id="glow">
+        <feGaussianBlur stdDeviation="10" result="coloredBlur"/>
+        <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+        </filter>
+        </defs>
+
+            <!-- Neon Rings -->
+        <g class="rotate-ring" style="transform-origin: 300px 300px;">
+        <circle cx="300" cy="300" r="240" fill="none" stroke="${accentCyan}" stroke-width="1.5" opacity="0.3" stroke-dasharray="15 25"/>
+        </g>
+
+        <g class="rotate-ring-reverse" style="transform-origin: 300px 300px;">
+        <circle cx="300" cy="300" r="200" fill="none" stroke="${accentPurple}" stroke-width="2" opacity="0.4" stroke-dasharray="20 20"/>
+        </g>
+
+        <g class="rotate-ring" style="transform-origin: 300px 300px; animation-duration: 30s;">
+        <circle cx="300" cy="300" r="280" fill="none" stroke="${accentCyan}" stroke-width="1" opacity="0.2" stroke-dasharray="10 30"/>
+        </g>
+
+            <!-- AI Chip Center -->
+        <g filter="url(#glow)">
+            <!-- Chip Base -->
+        <rect x="220" y="220" width="160" height="160" rx="20" fill="url(#glowGrad)" opacity="0.2"/>
+        <rect x="230" y="230" width="140" height="140" rx="16" fill="${bgDeep}" stroke="url(#chipGrad)" stroke-width="3"/>
+
+            <!-- Circuit Lines -->
+        <line x1="250" y1="250" x2="290" y2="250" stroke="${accentCyan}" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+        </line>
+        <line x1="310" y1="250" x2="350" y2="250" stroke="${accentCyan}" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="0.3s"/>
+        </line>
+
+        <line x1="250" y1="280" x2="350" y2="280" stroke="${accentPurple}" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="0.6s"/>
+        </line>
+
+        <line x1="250" y1="310" x2="290" y2="310" stroke="${accentCyan}" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="0.9s"/>
+        </line>
+        <line x1="310" y1="310" x2="350" y2="310" stroke="${accentCyan}" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="1.2s"/>
+        </line>
+
+        <line x1="250" y1="340" x2="350" y2="340" stroke="${accentPurple}" stroke-width="2" opacity="0.6">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+        </line>
+
+            <!-- Circuit Nodes -->
+        <circle cx="250" cy="250" r="5" fill="${accentCyan}" class="pulse-glow"/>
+        <circle cx="290" cy="250" r="4" fill="${accentCyan}">
+        <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="310" cy="250" r="4" fill="${accentCyan}">
+        <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+        </circle>
+        <circle cx="350" cy="250" r="5" fill="${accentCyan}" class="pulse-glow"/>
+
+        <circle cx="250" cy="280" r="4" fill="${accentPurple}">
+        <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite" begin="1s"/>
+        </circle>
+        <circle cx="300" cy="280" r="5" fill="${accentPurple}" class="pulse-glow"/>
+        <circle cx="350" cy="280" r="4" fill="${accentPurple}">
+        <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+        </circle>
+
+        <circle cx="300" cy="310" r="6" fill="${accentCyan}" class="pulse-glow"/>
+
+            <!-- Center Core -->
+        <circle cx="300" cy="300" r="25" fill="url(#chipGrad)" opacity="0.3">
+        <animate attributeName="r" values="25;28;25" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="300" cy="300" r="20" fill="${bgDeep}" stroke="url(#chipGrad)" stroke-width="2"/>
+
+            <!-- AI Text -->
+        <text x="300" y="310" text-anchor="middle" font-size="20" fill="url(#chipGrad)" font-weight="900">AI</text>
+        </g>
+
+            <!-- External Connection Lines -->
+        <line x1="300" y1="230" x2="300" y2="100" stroke="${accentCyan}" stroke-width="2" opacity="0.4" stroke-dasharray="5 10">
+        <animate attributeName="stroke-dashoffset" from="0" to="15" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <line x1="370" y1="300" x2="500" y2="300" stroke="${accentPurple}" stroke-width="2" opacity="0.4" stroke-dasharray="5 10">
+        <animate attributeName="stroke-dashoffset" from="0" to="15" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <line x1="230" y1="300" x2="100" y2="300" stroke="${accentCyan}" stroke-width="2" opacity="0.4" stroke-dasharray="5 10">
+        <animate attributeName="stroke-dashoffset" from="0" to="15" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <line x1="300" y1="370" x2="300" y2="500" stroke="${accentPurple}" stroke-width="2" opacity="0.4" stroke-dasharray="5 10">
+        <animate attributeName="stroke-dashoffset" from="0" to="15" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+            <!-- External Nodes -->
+        <circle cx="300" cy="100" r="8" fill="${accentCyan}" opacity="0.8">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="500" cy="300" r="8" fill="${accentPurple}" opacity="0.8">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+        </circle>
+        <circle cx="100" cy="300" r="8" fill="${accentCyan}" opacity="0.8">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" begin="1s"/>
+        </circle>
+        <circle cx="300" cy="500" r="8" fill="${accentPurple}" opacity="0.8">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+        </circle>
+        </svg>
+        </div>
+        </div>
+        </div>
+        </div>
+        </section>
+
+            <!-- Testimonials Section -->
+        <section style="padding: 8% 5%; position: relative; z-index: 1;">
+        <div style="max-width: 1300px; margin: 0 auto;">
+
+        <div style="text-align: center; margin-bottom: 60px;">
+        <h2 style="font-size: ${baseSize * 3}px; font-weight: 900; color: ${textWhite}; margin-bottom: 16px; letter-spacing: -0.02em;">Trusted by Industry Leaders</h2>
+        <p style="font-size: ${baseSize * 1.125}px; color: ${textWhite}; opacity: 0.7;">See what our customers have to say</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+
+            <!-- Testimonial 1 -->
+        <div class="glass-card" style="padding: 36px; border-radius: 24px;">
+        <div style="margin-bottom: 20px;">
+        <span style="font-size: ${baseSize * 2}px; color: ${accentCyan};">★★★★★</span>
+        </div>
+        <p style="font-size: ${baseSize * 1.125}px; color: ${textWhite}; opacity: 0.85; line-height: 1.7; margin-bottom: 24px;">
+        "This AI chatbot has revolutionized our customer support. Response times are incredible!"
+        </p>
+        <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); border-radius: 50%;"></div>
+        <div>
+        <div style="font-size: ${baseSize}px; font-weight: 700; color: ${textWhite};">Sarah Chen</div>
+        <div style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6;">CEO, TechStart</div>
+        </div>
+        </div>
+        </div>
+
+            <!-- Testimonial 2 -->
+        <div class="glass-card" style="padding: 36px; border-radius: 24px;">
+        <div style="margin-bottom: 20px;">
+        <span style="font-size: ${baseSize * 2}px; color: ${accentCyan};">★★★★★</span>
+        </div>
+        <p style="font-size: ${baseSize * 1.125}px; color: ${textWhite}; opacity: 0.85; line-height: 1.7; margin-bottom: 24px;">
+        "The adaptive learning feature is phenomenal. It gets better with every conversation."
+        </p>
+        <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, ${accentPurple}, ${accentCyan}); border-radius: 50%;"></div>
+        <div>
+        <div style="font-size: ${baseSize}px; font-weight: 700; color: ${textWhite};">Michael Ross</div>
+        <div style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6;">CTO, InnovateCo</div>
+        </div>
+        </div>
+        </div>
+
+            <!-- Testimonial 3 -->
+        <div class="glass-card" style="padding: 36px; border-radius: 24px;">
+        <div style="margin-bottom: 20px;">
+        <span style="font-size: ${baseSize * 2}px; color: ${accentCyan};">★★★★★</span>
+        </div>
+        <p style="font-size: ${baseSize * 1.125}px; color: ${textWhite}; opacity: 0.85; line-height: 1.7; margin-bottom: 24px;">
+        "Best AI platform we've used. The analytics dashboard provides incredible insights."
+        </p>
+        <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); border-radius: 50%;"></div>
+        <div>
+        <div style="font-size: ${baseSize}px; font-weight: 700; color: ${textWhite};">Emma Thompson</div>
+        <div style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6;">VP, DataFlow</div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </section>
+        </div>
+
+            <!-- FEATURES PAGE -->
+        <div id="features-page" class="page">
+        <section style="padding: 8% 5%; position: relative; z-index: 1; min-height: 80%;">
+        <div style="max-width: 1300px; margin: 0 auto;">
+
+        <div style="text-align: center; margin-bottom: 70px;">
+        <h2 style="font-size: ${baseSize * 4}px; font-weight: 900; color: ${textWhite}; margin-bottom: 18px; letter-spacing: -0.02em;">Powerful AI Features</h2>
+        <p style="font-size: ${baseSize * 1.375}px; color: ${textWhite}; opacity: 0.7; max-width: 800px; margin: 0 auto; line-height: 1.7;">Advanced capabilities designed to transform your customer engagement and drive results</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 80px;">
+
+            <!-- Feature 1 -->
+        <div class="glass-card" style="padding: 44px 36px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='${accentCyan}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+
+        <div class="glass-strong" style="width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px; border: 1px solid ${accentCyan}40;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${accentCyan}" stroke-width="2">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+        <path d="M2 17L12 22L22 17"/>
+        <path d="M2 12L12 17L22 12"/>
+        </svg>
+        </div>
+
+        <h3 style="font-size: ${baseSize * 1.625}px; font-weight: 800; color: ${textWhite}; margin-bottom: 14px; letter-spacing: -0.01em;">
+        ${config.feature_1_title || defaultConfig.feature_1_title}
+        </h3>
+
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7;">
+        Advanced neural networks process and understand complex queries with human-like comprehension and contextual awareness
+        </p>
+        </div>
+
+            <!-- Feature 2 -->
+        <div class="glass-card" style="padding: 44px 36px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='${accentPurple}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+
+        <div class="glass-strong" style="width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px; border: 1px solid ${accentPurple}40;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${accentPurple}" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v6m0 6v6M1 12h6m6 0h6"/>
+        <circle cx="12" cy="12" r="10"/>
+        </svg>
+        </div>
+
+        <h3 style="font-size: ${baseSize * 1.625}px; font-weight: 800; color: ${textWhite}; margin-bottom: 14px; letter-spacing: -0.01em;">
+        ${config.feature_2_title || defaultConfig.feature_2_title}
+        </h3>
+
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7;">
+        Continuously learns from interactions to provide increasingly accurate and personalized responses over time
+        </p>
+        </div>
+
+            <!-- Feature 3 -->
+        <div class="glass-card" style="padding: 44px 36px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='${accentCyan}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+
+        <div class="glass-strong" style="width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px; border: 1px solid ${accentCyan}40;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${accentCyan}" stroke-width="2">
+        <path d="M3 3v18h18"/>
+        <path d="M18 17V9"/>
+        <path d="M13 17V5"/>
+        <path d="M8 17v-3"/>
+        </svg>
+        </div>
+
+        <h3 style="font-size: ${baseSize * 1.625}px; font-weight: 800; color: ${textWhite}; margin-bottom: 14px; letter-spacing: -0.01em;">
+        ${config.feature_3_title || defaultConfig.feature_3_title}
+        </h3>
+
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7;">
+        Comprehensive analytics dashboard with live metrics and actionable insights for optimization
+        </p>
+        </div>
+
+            <!-- Feature 4 -->
+        <div class="glass-card" style="padding: 44px 36px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='${accentPurple}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+
+        <div class="glass-strong" style="width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px; border: 1px solid ${accentPurple}40;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${accentPurple}" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        </div>
+
+        <h3 style="font-size: ${baseSize * 1.625}px; font-weight: 800; color: ${textWhite}; margin-bottom: 14px; letter-spacing: -0.01em;">
+        Multi-Language Support
+        </h3>
+
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7;">
+        Communicate with customers in over 100 languages with natural, culturally-aware responses
+        </p>
+        </div>
+
+            <!-- Feature 5 -->
+        <div class="glass-card" style="padding: 44px 36px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='${accentCyan}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+
+        <div class="glass-strong" style="width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px; border: 1px solid ${accentCyan}40;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${accentCyan}" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        </div>
+
+        <h3 style="font-size: ${baseSize * 1.625}px; font-weight: 800; color: ${textWhite}; margin-bottom: 14px; letter-spacing: -0.01em;">
+        Enterprise Security
+        </h3>
+
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7;">
+        Bank-level encryption, SOC 2 compliance, and GDPR-ready data handling for complete peace of mind
+        </p>
+        </div>
+
+            <!-- Feature 6 -->
+        <div class="glass-card" style="padding: 44px 36px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='${accentPurple}'; this.style.background='rgba(255, 255, 255, 0.08)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+
+        <div class="glass-strong" style="width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px; border: 1px solid ${accentPurple}40;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${accentPurple}" stroke-width="2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
+        <polyline points="7.5 19.79 7.5 14.6 3 12"/>
+        <polyline points="21 12 16.5 14.6 16.5 19.79"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        </div>
+
+        <h3 style="font-size: ${baseSize * 1.625}px; font-weight: 800; color: ${textWhite}; margin-bottom: 14px; letter-spacing: -0.01em;">
+        Seamless Integration
+        </h3>
+
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7;">
+        Easy integration with Slack, WhatsApp, Facebook Messenger, and 50+ other platforms
+        </p>
+        </div>
+        </div>
+        </div>
+        </section>
+        </div>
+
+            <!-- PLATFORM PAGE -->
+        <div id="platform-page" class="page">
+        <section style="padding: 8% 5%; position: relative; z-index: 1; min-height: 80%;">
+        <div style="max-width: 1100px; margin: 0 auto;">
+        <div class="glass-strong" style="padding: 60px; border-radius: 32px;">
+
+        <div style="text-align: center; margin-bottom: 50px;">
+        <h2 style="font-size: ${baseSize * 3.5}px; font-weight: 900; color: ${textWhite}; margin-bottom: 16px; letter-spacing: -0.02em;">Experience the Platform</h2>
+        <p style="font-size: ${baseSize * 1.25}px; color: ${textWhite}; opacity: 0.7;">Intuitive interface designed for seamless interaction</p>
+        </div>
+
+            <!-- Chat Interface Demo -->
+        <div class="glass-card" style="padding: 32px; border-radius: 24px; min-height: 500px;">
+
+            <!-- Chat Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 24px; border-bottom: 1px solid ${glassBorder}10;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 52px; height: 52px; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: ${baseSize * 1.75}px;">
+        🤖
+        </div>
+        <div>
+        <div style="font-size: ${baseSize * 1.25}px; font-weight: 700; color: ${textWhite};">AI Assistant</div>
+        <div style="font-size: ${baseSize}px; color: ${accentCyan}; display: flex; align-items: center; gap: 6px;">
+        <span style="width: 6px; height: 6px; background: ${accentCyan}; border-radius: 50%; box-shadow: 0 0 8px ${accentCyan};"></span>
+        Active Now
+        </div>
+        </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+        <div class="glass-card" style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentCyan}'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+        <span style="font-size: ${baseSize * 1.375}px;">⚙️</span>
+        </div>
+        </div>
+        </div>
+
+            <!-- Chat Messages -->
+        <div style="padding: 40px 0; display: flex; flex-direction: column; gap: 24px; max-height: 400px; overflow-y: auto;">
+
+            <!-- Bot Message -->
+        <div style="display: flex; gap: 12px; max-width: 85%;">
+        <div class="glass-card" style="padding: 18px 24px; border-radius: 20px; border-top-left-radius: 4px;">
+        <p style="font-size: ${baseSize * 1.0625}px; color: ${textWhite}; line-height: 1.6; margin: 0;">
+        Hello! I'm your AI assistant. I'm here to help with any questions you have about our platform. What would you like to know?
+        </p>
+        </div>
+        </div>
+
+            <!-- User Message -->
+        <div style="display: flex; gap: 12px; max-width: 85%; margin-left: auto; justify-content: flex-end;">
+        <div style="background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); padding: 18px 24px; border-radius: 20px; border-top-right-radius: 4px;">
+        <p style="font-size: ${baseSize * 1.0625}px; color: ${textWhite}; line-height: 1.6; margin: 0;">
+        What features does your platform offer?
+        </p>
+        </div>
+        </div>
+
+            <!-- Bot Message -->
+        <div style="display: flex; gap: 12px; max-width: 85%;">
+        <div class="glass-card" style="padding: 18px 24px; border-radius: 20px; border-top-left-radius: 4px;">
+        <p style="font-size: ${baseSize * 1.0625}px; color: ${textWhite}; line-height: 1.6; margin: 0;">
+        Great question! We offer neural processing for intelligent responses, adaptive learning that improves over time, real-time insights with comprehensive analytics, multi-language support, enterprise-grade security, and seamless integrations with 50+ platforms. Would you like to know more about any specific feature?
+        </p>
+        </div>
+        </div>
+
+            <!-- User Message -->
+        <div style="display: flex; gap: 12px; max-width: 85%; margin-left: auto; justify-content: flex-end;">
+        <div style="background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); padding: 18px 24px; border-radius: 20px; border-top-right-radius: 4px;">
+        <p style="font-size: ${baseSize * 1.0625}px; color: ${textWhite}; line-height: 1.6; margin: 0;">
+        Tell me about the analytics dashboard
+        </p>
+        </div>
+        </div>
+
+            <!-- Bot Message with typing indicator -->
+        <div style="display: flex; gap: 12px; max-width: 85%;">
+        <div class="glass-card" style="padding: 18px 24px; border-radius: 20px; border-top-left-radius: 4px;">
+        <div style="display: flex; gap: 6px; align-items: center;">
+        <span style="width: 8px; height: 8px; background: ${accentCyan}; border-radius: 50%; animation: pulse-glow 1.4s ease-in-out infinite;"></span>
+        <span style="width: 8px; height: 8px; background: ${accentCyan}; border-radius: 50%; animation: pulse-glow 1.4s ease-in-out 0.2s infinite;"></span>
+        <span style="width: 8px; height: 8px; background: ${accentCyan}; border-radius: 50%; animation: pulse-glow 1.4s ease-in-out 0.4s infinite;"></span>
+        </div>
+        </div>
+        </div>
+        </div>
+
+            <!-- Chat Input -->
+        <div class="glass-card" style="display: flex; align-items: center; gap: 14px; padding: 16px 24px; border-radius: 18px; margin-top: 28px;">
+        <input type="text" placeholder="Type your message..." style="flex: 1; background: transparent; border: none; outline: none; color: ${textWhite}; font-size: ${baseSize * 1.0625}px; font-family: inherit;"/>
+        <button style="width: 48px; height: 48px; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); border: none; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"
+        onmouseover="this.style.transform='scale(1.05)'"
+        onmouseout="this.style.transform='scale(1)'">
+        <span style="font-size: ${baseSize * 1.375}px;">➤</span>
+        </button>
+        </div>
+        </div>
+
+            <!-- Platform Stats -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px;">
+        <div class="glass-card" style="padding: 28px; border-radius: 18px; text-align: center;">
+        <div style="font-size: ${baseSize * 2.5}px; font-weight: 900; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">< 100ms</div>
+        <div style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7;">Response Time</div>
+        </div>
+
+        <div class="glass-card" style="padding: 28px; border-radius: 18px; text-align: center;">
+        <div style="font-size: ${baseSize * 2.5}px; font-weight: 900; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">24/7</div>
+        <div style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7;">Availability</div>
+        </div>
+
+        <div class="glass-card" style="padding: 28px; border-radius: 18px; text-align: center;">
+        <div style="font-size: ${baseSize * 2.5}px; font-weight: 900; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">95%</div>
+        <div style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7;">Accuracy Rate</div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </section>
+        </div>
+
+            <!-- PRICING PAGE -->
+        <div id="pricing-page" class="page">
+        <section style="padding: 8% 5%; position: relative; z-index: 1; min-height: 80%;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+        <div style="text-align: center; margin-bottom: 60px;">
+        <h2 style="font-size: ${baseSize * 3.5}px; font-weight: 900; color: ${textWhite}; margin-bottom: 18px; letter-spacing: -0.02em;">Simple, Transparent Pricing</h2>
+        <p style="font-size: ${baseSize * 1.25}px; color: ${textWhite}; opacity: 0.7;">Choose the plan that fits your needs perfectly</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+
+            <!-- Starter Plan -->
+        <div class="glass-card" style="padding: 44px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-8px)'; this.style.borderColor='${accentCyan}'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+
+        <div style="font-size: ${baseSize * 0.875}px; font-weight: 700; color: ${accentCyan}; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Starter</div>
+
+        <div style="margin-bottom: 32px;">
+        <span style="font-size: ${baseSize * 3.5}px; font-weight: 900; color: ${textWhite};">$49</span>
+        <span style="font-size: ${baseSize * 1.125}px; color: ${textWhite}; opacity: 0.6;">/month</span>
+        </div>
+
+        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0;">
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> 5,000 messages/month
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> Basic AI responses
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> Email support
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> 1 chatbot
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> Basic analytics
+        </li>
+        </ul>
+
+        <button class="glass-card" style="width: 100%; color: ${textWhite}; padding: 16px; border-radius: 14px; font-size: ${baseSize * 1.125}px; font-weight: 700; border: 1px solid ${glassBorder}20; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentCyan}'; this.style.background='rgba(255, 255, 255, 0.1)'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+        Get Started
+        </button>
+        </div>
+
+            <!-- Pro Plan (Featured) -->
+        <div class="glass-strong" style="padding: 44px; border-radius: 24px; border: 2px solid ${accentCyan}; position: relative; transition: all 0.4s; cursor: pointer; box-shadow: 0 0 40px ${accentCyan}20;"
+        onmouseover="this.style.transform='translateY(-8px) scale(1.02)'"
+        onmouseout="this.style.transform='translateY(0) scale(1)'">
+
+        <div style="position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); color: ${textWhite}; padding: 8px 26px; border-radius: 24px; font-size: ${baseSize * 0.75}px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Most Popular</div>
+
+        <div style="font-size: ${baseSize * 0.875}px; font-weight: 700; color: ${accentCyan}; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Professional</div>
+
+        <div style="margin-bottom: 32px;">
+        <span style="font-size: ${baseSize * 3.5}px; font-weight: 900; color: ${textWhite};">$149</span>
+        <span style="font-size: ${baseSize * 1.125}px; color: ${textWhite}; opacity: 0.6;">/month</span>
+        </div>
+
+        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0;">
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> 50,000 messages/month
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> Advanced AI learning
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> Priority support
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> 5 chatbots
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> Full analytics dashboard
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentCyan};">✓</span> API access
+        </li>
+        </ul>
+
+        <button style="width: 100%; background: linear-gradient(135deg, ${accentCyan}, ${accentPurple}); color: ${textWhite}; padding: 16px; border-radius: 14px; font-size: ${baseSize * 1.125}px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 8px 30px ${accentCyan}35; transition: all 0.3s;"
+        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 40px ${accentCyan}50'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 30px ${accentCyan}35'">
+        Get Started
+        </button>
+        </div>
+
+            <!-- Enterprise Plan -->
+        <div class="glass-card" style="padding: 44px; border-radius: 24px; transition: all 0.4s; cursor: pointer;"
+        onmouseover="this.style.transform='translateY(-8px)'; this.style.borderColor='${accentPurple}'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+
+        <div style="font-size: ${baseSize * 0.875}px; font-weight: 700; color: ${accentPurple}; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Enterprise</div>
+
+        <div style="margin-bottom: 32px;">
+        <span style="font-size: ${baseSize * 3.5}px; font-weight: 900; color: ${textWhite};">Custom</span>
+        </div>
+
+        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0;">
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> Unlimited messages
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> Custom AI training
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> 24/7 phone support
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> Unlimited chatbots
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> Advanced analytics
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> Dedicated manager
+        </li>
+        <li style="padding: 14px 0; color: ${textWhite}; opacity: 0.85; font-size: ${baseSize}px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: ${accentPurple};">✓</span> SLA guarantee
+        </li>
+        </ul>
+
+        <button class="glass-card" style="width: 100%; color: ${textWhite}; padding: 16px; border-radius: 14px; font-size: ${baseSize * 1.125}px; font-weight: 700; border: 1px solid ${glassBorder}20; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentPurple}'; this.style.background='rgba(255, 255, 255, 0.1)'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.2)'; this.style.background='rgba(255, 255, 255, 0.05)'">
+        Contact Sales
+        </button>
+        </div>
+        </div>
+        </div>
+        </section>
+        </div>
+
+            <!-- Footer -->
+        <footer class="glass-card" style="margin: 0 5% 3% 5%; padding: 60px 5%; border-radius: 32px; border: 1px solid ${glassBorder}15;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 50px;">
+
+            <!-- Brand Column -->
+        <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <div class="glass-strong" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#footerGrad)"/>
+        <defs>
+        <linearGradient id="footerGrad" x1="2" y1="2" x2="22" y2="12">
+        <stop offset="0%" stop-color="${accentCyan}"/>
+        <stop offset="100%" stop-color="${accentPurple}"/>
+        </linearGradient>
+        </defs>
+        </svg>
+        </div>
+        <span style="font-size: ${baseSize * 1.375}px; font-weight: 800; color: ${textWhite};">
+        ${config.brand_name || defaultConfig.brand_name}
+        </span>
+        </div>
+        <p style="font-size: ${baseSize}px; color: ${textWhite}; opacity: 0.7; line-height: 1.7; max-width: 320px; margin-bottom: 24px;">
+        ${config.footer_text || defaultConfig.footer_text}
+        </p>
+        <div style="display: flex; gap: 14px;">
+        <div class="glass-card" style="width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentCyan}'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+        <span style="font-size: ${baseSize * 1.125}px;">𝕏</span>
+        </div>
+        <div class="glass-card" style="width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentCyan}'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+        <span style="font-size: ${baseSize * 1.125}px;">in</span>
+        </div>
+        <div class="glass-card" style="width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;"
+        onmouseover="this.style.borderColor='${accentCyan}'"
+        onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+        <span style="font-size: ${baseSize * 1.125}px;">📷</span>
+        </div>
+        </div>
+        </div>
+
+            <!-- Product Column -->
+        <div>
+        <h4 style="font-size: ${baseSize * 1.125}px; font-weight: 800; color: ${textWhite}; margin-bottom: 24px; letter-spacing: -0.01em;">Product</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" onclick="navigateToPage('features')" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Features</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" onclick="navigateToPage('pricing')" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Pricing</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Integrations</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">API Docs</a></li>
+        </ul>
+        </div>
+
+            <!-- Company Column -->
+        <div>
+        <h4 style="font-size: ${baseSize * 1.125}px; font-weight: 800; color: ${textWhite}; margin-bottom: 24px; letter-spacing: -0.01em;">Company</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">About</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Blog</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Careers</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Contact</a></li>
+        </ul>
+        </div>
+
+            <!-- Legal Column -->
+        <div>
+        <h4 style="font-size: ${baseSize * 1.125}px; font-weight: 800; color: ${textWhite}; margin-bottom: 24px; letter-spacing: -0.01em;">Legal</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Privacy Policy</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Terms of Service</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Security</a></li>
+        <li style="margin-bottom: 14px;"><a href="javascript:void(0)" style="color: ${textWhite}; opacity: 0.7; font-size: ${baseSize}px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.opacity='1'; this.style.color='${accentCyan}'" onmouseout="this.style.opacity='0.7'; this.style.color='${textWhite}'">Compliance</a></li>
+        </ul>
+        </div>
+        </div>
+
+            <!-- Bottom Bar -->
+        <div style="padding-top: 32px; border-top: 1px solid ${glassBorder}10;">
+        <p style="font-size: ${baseSize * 0.875}px; color: ${textWhite}; opacity: 0.6; text-align: center;">
+        © 2024 ${config.brand_name || defaultConfig.brand_name}. All rights reserved. Built with AI intelligence.
+        </p>
+        </div>
+        </div>
+        </footer>
+        </div>
+
+        <style>
+        @media (max-width: 968px) {
+        section > div > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        }
+        footer > div > div:first-child {
+        grid-template-columns: 1fr 1fr !important;
+        }
+        }
+        </style>
+        `;
+
+      // Set up navigation after render
+      window.navigateToPage = navigateToPage;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.bg_deep_blue || defaultConfig.bg_deep_blue,
+            set: (value) => {
+              config.bg_deep_blue = value;
+              window.elementSdk.setConfig({ bg_deep_blue: value });
+            }
+          },
+          {
+            get: () => config.bg_mid_blue || defaultConfig.bg_mid_blue,
+            set: (value) => {
+              config.bg_mid_blue = value;
+              window.elementSdk.setConfig({ bg_mid_blue: value });
+            }
+          },
+          {
+            get: () => config.accent_cyan || defaultConfig.accent_cyan,
+            set: (value) => {
+              config.accent_cyan = value;
+              window.elementSdk.setConfig({ accent_cyan: value });
+            }
+          },
+          {
+            get: () => config.accent_purple || defaultConfig.accent_purple,
+            set: (value) => {
+              config.accent_purple = value;
+              window.elementSdk.setConfig({ accent_purple: value });
+            }
+          },
+          {
+            get: () => config.text_white || defaultConfig.text_white,
+            set: (value) => {
+              config.text_white = value;
+              window.elementSdk.setConfig({ text_white: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            config.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            config.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ['brand_name', config.brand_name || defaultConfig.brand_name],
+        ['nav_item_1', config.nav_item_1 || defaultConfig.nav_item_1],
+        ['nav_item_2', config.nav_item_2 || defaultConfig.nav_item_2],
+        ['nav_item_3', config.nav_item_3 || defaultConfig.nav_item_3],
+        ['nav_item_4', config.nav_item_4 || defaultConfig.nav_item_4],
+        ['nav_cta', config.nav_cta || defaultConfig.nav_cta],
+        ['hero_title', config.hero_title || defaultConfig.hero_title],
+        ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
+        ['hero_description', config.hero_description || defaultConfig.hero_description],
+        ['primary_button', config.primary_button || defaultConfig.primary_button],
+        ['secondary_button', config.secondary_button || defaultConfig.secondary_button],
+        ['feature_1_title', config.feature_1_title || defaultConfig.feature_1_title],
+        ['feature_2_title', config.feature_2_title || defaultConfig.feature_2_title],
+        ['feature_3_title', config.feature_3_title || defaultConfig.feature_3_title],
+        ['footer_text', config.footer_text || defaultConfig.footer_text]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+
+      config = window.elementSdk.config;
+      render();
+    }
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b795705c2a66e29',t:'MTc2NzM0NzI5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

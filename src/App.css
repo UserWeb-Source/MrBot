@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.grain-texture{
+    font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background: linear-gradient(180deg, #0a0f1e 0%, #141b2d 50%, #1a1535 100%);
+    color: white;
+    min-height: 100%;
+    position: relative;
+}
