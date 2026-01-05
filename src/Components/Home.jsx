@@ -2,8 +2,8 @@ import React from 'react';
 import "../CSS/home.css";
 
 export default function Home() {
-    const accentCyan = "#ef1717";
-    const accentPurple = "#ff9100";
+    const red = "#ef1717";
+    const orange = "#ff9100";
     const textWhite = "#FFFFFF";
     const bgDeep = "#0B1220";
     const glassBorder = "#FFFFFF";
@@ -48,7 +48,7 @@ export default function Home() {
                                 <span
                                     style={{
                                         fontSize: `${baseSize * 0.875}px`,
-                                        color: accentCyan,
+                                        color: red,
                                         fontWeight: 700,
                                         letterSpacing: "1.5px",
                                     }}
@@ -97,7 +97,7 @@ export default function Home() {
                             >
                                 <button
                                     style={{
-                                        background: `linear-gradient(135deg, ${accentCyan}, ${accentPurple})`,
+                                        background: `linear-gradient(135deg, ${red}, ${orange})`,
                                         color: textWhite,
                                         padding: "18px 40px",
                                         borderRadius: "14px",
@@ -107,7 +107,7 @@ export default function Home() {
                                         cursor: "pointer",
                                         boxShadow: `0 8px 30px rgba(255,145,145,0.34)`,
                                     }}
-                                >
+                                onClick={() => {window.location.href="/chatbot"}}>
                                     Get Started
                                 </button>
 
@@ -139,7 +139,7 @@ export default function Home() {
                                             style={{
                                                 fontSize: `${baseSize * 2.75}px`,
                                                 fontWeight: 900,
-                                                background: `linear-gradient(135deg, ${accentCyan}, ${accentPurple})`,
+                                                background: `linear-gradient(135deg, ${red}, ${orange})`,
                                                 WebkitBackgroundClip: "text",
                                                 WebkitTextFillColor: "transparent",
                                             }}
@@ -175,8 +175,8 @@ export default function Home() {
                                 <svg viewBox="0 0 600 600" style={{ width: "90%" }}>
                                     <defs>
                                         <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stopColor={accentCyan} />
-                                            <stop offset="100%" stopColor={accentPurple} />
+                                            <stop offset="0%" stopColor={red} />
+                                            <stop offset="100%" stopColor={orange} />
                                         </linearGradient>
                                     </defs>
 
@@ -235,12 +235,12 @@ export default function Home() {
                         }}
                     >
                         {[
-                            ["Sarah Chen", "CEO, TechStart", "Amazing AI support experience!"],
-                            ["Michael Ross", "CTO, InnovateCo", "Adaptive learning is incredible."],
-                            ["Emma Thompson", "VP, DataFlow", "Best AI analytics dashboard."],
-                        ].map(([name, role, text]) => (
+                            ["Sarah Chen", "CEO, TechStart", "Amazing AI support experience!","/prf_101.avif"],
+                            ["Michael Ross", "CTO, InnovateCo", "Adaptive learning is incredible.","/prf_102.avif"],
+                            ["Emma Thompson", "VP, DataFlow", "Best AI analytics dashboard.","/prf_103.jpg"],
+                        ].map(([name, role, text,imgurl]) => (
                             <div key={name} className="glass-card" style={{ padding: "36px", borderRadius: "24px" }}>
-                                <span style={{ fontSize: `${baseSize * 2}px`, color: accentCyan }}>★★★★★</span>
+                                <span style={{ fontSize: `${baseSize * 2}px`, color: red }}>★★★★★</span>
                                 <p
                                     style={{
                                         fontSize: `${baseSize * 1.125}px`,
@@ -252,14 +252,7 @@ export default function Home() {
                                     “{text}”
                                 </p>
                                 <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                                    <div
-                                        style={{
-                                            width: "48px",
-                                            height: "48px",
-                                            borderRadius: "50%",
-                                            background: `linear-gradient(135deg, ${accentCyan}, ${accentPurple})`,
-                                        }}
-                                    />
+                                    <img src={imgurl} className="h-12 w-12 object-cover rounded-4xl" alt=""/>
                                     <div>
                                         <div style={{ color: textWhite, fontWeight: 700 }}>{name}</div>
                                         <div style={{ color: textWhite, opacity: 0.6, fontSize: "14px" }}>{role}</div>

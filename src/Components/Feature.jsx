@@ -1,9 +1,8 @@
 import React from 'react'
 import FeatureCard from "./FeatureCard.jsx";
-import "../CSS/features.css"
+import "../CSS/features.css";
 
 export default function Feature() {
-
     return (
         <section
             style={{
@@ -47,12 +46,7 @@ export default function Feature() {
                 </div>
 
                 {/* Feature Grid */}
-                <div className="features-grid">
-                    <FeatureCard />
-                    <FeatureCard />
-                    <FeatureCard />
-                    <FeatureCard />
-                    <FeatureCard />
+                <div className="feature-cards-container">
                     <FeatureCard />
                 </div>
             </div>

@@ -1,0 +1,122 @@
+.pricing-section {
+    padding: 8% 5%;
+    position: relative;
+    z-index: 1;
+    min-height: 80%;
+}
+
+.pricing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+/* Cards */
+.pricing-card {
+    padding: 44px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Starter */
+.pricing-card.starter:hover {
+    border:2px solid #fc9003;
+    box-shadow: 0 0 40px rgba(255, 145, 145, 0.5);
+    /*const red= "#ef1717";*/
+    /*const orange = "#fc9003";*/
+}
+
+/* Enterprise */
+.pricing-card.enterprise:hover {
+    border:2px solid #fc9003;
+    box-shadow: 0 0 40px rgba(255, 145, 145, 0.5);
+}
+
+/* Featured */
+.pricing-card.featured {
+    position: relative;
+    border: 2px solid #ef1717;
+    box-shadow: 0 0 40px rgba(255, 70, 70, 0.5);
+}
+
+.pricing-card.featured:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* Badge */
+.badge {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 26px;
+    border-radius: 24px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+}
+
+/* Feature list */
+.plan-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+}
+
+.plan-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 0;
+}
+
+/* Buttons */
+.outline-button {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.outline-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.gradient-button {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    border: none;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255, 70, 70, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255, 70, 70, 0.5);
+}

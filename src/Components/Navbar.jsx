@@ -1,16 +1,18 @@
 import React from 'react';
 import "../CSS/navbar.css";
+import {useHref} from "react-router-dom";
 
 export default function Navbar() {
-    const accentCyan = "#ef1717";
-    const accentPurple = "#ff9100";
+    const red= "#ef1717";
+    const orange = "#ff9100";
     const textWhite = "#FFFFFF";
     const glassBorder = "#ffffff";
     const baseSize = 16;
+    const loc = useHref()
     return (
         <>
             <nav
-                className="glass-card"
+                className={`glass-card ${loc==="/chatbot"?"hidden":""}`}
                 style={{
                     position: "sticky",
                     top: 0,
@@ -53,12 +55,12 @@ export default function Navbar() {
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <defs>
                                     <linearGradient id="logoGrad1" x1="2" y1="2" x2="22" y2="12">
-                                        <stop offset="0%" stopColor={accentCyan} />
-                                        <stop offset="100%" stopColor={accentPurple} />
+                                        <stop offset="0%" stopColor={red} />
+                                        <stop offset="100%" stopColor={orange} />
                                     </linearGradient>
                                     <linearGradient id="logoGrad2" x1="2" y1="17" x2="22" y2="22">
-                                        <stop offset="0%" stopColor={accentCyan} />
-                                        <stop offset="100%" stopColor={accentPurple} />
+                                        <stop offset="0%" stopColor={red} />
+                                        <stop offset="100%" stopColor={orange} />
                                     </linearGradient>
                                 </defs>
                                 <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logoGrad1)" />
@@ -78,7 +80,7 @@ export default function Navbar() {
                                 letterSpacing: "-0.02em",
                             }}
                         >
-            BrandName
+            Mr.Bott
           </span>
                     </div>
 
@@ -112,7 +114,7 @@ export default function Navbar() {
                         <button
                             className="glass-strong"
                             style={{
-                                background: `linear-gradient(135deg, ${accentCyan}, ${accentPurple})`,
+                                background: `linear-gradient(135deg, ${red}, ${orange})`,
                                 color: textWhite,
                                 padding: "11px 28px",
                                 borderRadius: "12px",
@@ -122,7 +124,7 @@ export default function Navbar() {
                                 cursor: "pointer",
                                 boxShadow: "0 4px 20px rgba(34,211,238,0.3)",
                             }}
-                        >
+                                onClick={() => {window.location.href="/chatbot"}}>
                             Get Started with AI
                         </button>
                     </div>

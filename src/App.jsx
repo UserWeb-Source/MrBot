@@ -4,6 +4,9 @@ import Navbar from "./Components/Navbar.jsx";
 import React from "react";
 import Home from "./Components/Home.jsx";
 import Features from "./Components/Feature.jsx";
+import Platform from "./Components/Platform.jsx";
+import Pricing from "./Components/Pricing.jsx";
+import Chatbot from "./Components/Chatbot.jsx";
 
 function App() {
 
@@ -46,6 +49,9 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home/>}/>
                         <Route path="/features" element={<Features/>}/>
+                        <Route path="/platform" element={<Platform/>}/>
+                        <Route path="/pricing" element={<Pricing />}/>
+                        <Route path="/chatbot" element={<Chatbot />}/>
                     </Routes>
                 </div>
             </BrowserRouter>
