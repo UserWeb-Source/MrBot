@@ -1,7 +1,7 @@
 import React from 'react';
 import "../CSS/home.css";
 
-export default function Home() {
+export default function Home({Auth}) {
     const red = "#ef1717";
     const orange = "#ff9100";
     const textWhite = "#FFFFFF";
@@ -107,7 +107,12 @@ export default function Home() {
                                         cursor: "pointer",
                                         boxShadow: `0 8px 30px rgba(255,145,145,0.34)`,
                                     }}
-                                onClick={() => {window.location.href="/chatbot"}}>
+                                onClick={() => {
+                                    if(!Auth) {
+                                        return window.location.href = "/login";
+                                    }
+                                    window.location.href = "/chatbot";
+                                }}>
                                     Get Started
                                 </button>
 

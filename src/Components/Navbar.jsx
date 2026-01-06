@@ -2,7 +2,7 @@ import React from 'react';
 import "../CSS/navbar.css";
 import {useHref} from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar({Auth}) {
     const red= "#ef1717";
     const orange = "#ff9100";
     const textWhite = "#FFFFFF";
@@ -124,7 +124,12 @@ export default function Navbar() {
                                 cursor: "pointer",
                                 boxShadow: "0 4px 20px rgba(34,211,238,0.3)",
                             }}
-                                onClick={() => {window.location.href="/chatbot"}}>
+                            onClick={() => {
+                                if(!Auth) {
+                                    return window.location.href = "/login";
+                                }
+                                window.location.href = "/chatbot";
+                            }}>
                             Get Started with AI
                         </button>
                     </div>

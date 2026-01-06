@@ -7,9 +7,11 @@ import Features from "./Components/Feature.jsx";
 import Platform from "./Components/Platform.jsx";
 import Pricing from "./Components/Pricing.jsx";
 import Chatbot from "./Components/Chatbot.jsx";
+import SignUp from "./Components/Auth.jsx";
+import {SignIn} from "./Components/Auth.jsx";
 
 function App() {
-
+    const [auth,setAuth] = React.useState(false);
     return (
         <>
             <BrowserRouter>
@@ -45,13 +47,15 @@ function App() {
                             zIndex: 0,
                         }}
                     />
-                    <Navbar/>
+                    <Navbar Auth={auth}/>
                     <Routes>
-                        <Route path="/" element={<Home/>}/>
-                        <Route path="/features" element={<Features/>}/>
-                        <Route path="/platform" element={<Platform/>}/>
+                        <Route path="/" element={<Home Auth={auth}/>}/>
+                        <Route path="/features" element={<Features />}/>
+                        <Route path="/platform" element={<Platform Auth={auth}/>}/>
                         <Route path="/pricing" element={<Pricing />}/>
                         <Route path="/chatbot" element={<Chatbot />}/>
+                        <Route path="/login" element={<SignIn />}/>
+                        <Route path="/register" element={<SignUp />}/>
                     </Routes>
                 </div>
             </BrowserRouter>
